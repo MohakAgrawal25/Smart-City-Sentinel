@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart City Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: #e0e0e0; text-align: center; }
+        h2 { color: #ffffff; margin-top: 10px; }
+        #map { height: 80vh; width: 95%; margin: 15px auto; border: 2px solid #334155; border-radius: 8px; }
+        .legend { background: rgba(30,41,59,0.9); padding: 10px; border-radius: 8px; border: 1px solid #475569; display: inline-block; text-align: left; margin: 10px auto; backdrop-filter: blur(5px); color: #fff; }
+        .legend b { color: #fbbf24; }
+        .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+        .popup-img { max-width: 250px; max-height: 200px; border-radius: 8px; margin-top: 5px; border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+    <h2>🗺️ Smart City Issue Map</h2>
+    <div id="map"></div>
+    <div class="legend">
+        <b>Legend:</b><br>
+        <span class="dot" style="background:blue;"></span> Garbage<br>
+        <span class="dot" style="background:red;"></span> Pothole/Cracks<br>
+        <span class="dot" style="background:green;"></span> Fallen Tree<br>
+        <span class="dot" style="background:yellow;"></span> Street Light (OFF)<br>
+        <span class="dot" style="background:orange;"></span> Road Sign (Poor)<br>
+        <span class="dot" style="background:purple;"></span> Electric Pole<br>
+        <span class="dot" style="background:black;"></span> Hybrid
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var rawMarkers = {{ markers | tojson }};
+        console.log("Markers:", rawMarkers);
+
+        var mapCenter = [20.5937, 78.9629];
+        if (rawMarkers && rawMarkers.length > 0) {
+            var last = rawMarkers[rawMarkers.length - 1];
+            if (last[1] && last[2]) {
+                mapCenter = [parseFloat(last[1]), parseFloat(last[2])];
+            }
+        }
+
+        var map = L.map('map').setView(mapCenter, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Custom purple marker (using a reliable PNG from GitHub)
+        // If that fails, we use a fallback: a purple circle marker
+        var purpleIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // Other colored icons (already working)
+        var iconUrls = {
+            "garbage": "blue",
+            "pothole_cracks": "red",
+            "fallen_tree": "green",
+            "street_light": "yellow",
+            "road_sign": "orange",
+            "hybrid": "black"
+        };
+
+        function getIcon(color) {
+            if (color === "purple") {
+                return purpleIcon;
+            }
+            return L.icon({
+                iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+        }
+
+        if (rawMarkers && rawMarkers.length > 0) {
+            rawMarkers.forEach(function(m) {
+                var type = m[0];
+                var lat = parseFloat(m[1]);
+                var lng = parseFloat(m[2]);
+                var imgPath = m[3];
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    var color;
+                    if (type === "electric_pole") {
+                        color = "purple";
+                    } else {
+                        color = iconUrls[type] || "red";
+                    }
+                    var icon = getIcon(color);
+
+                    var popupContent = '<b>Issue:</b> ' + type;
+                    if (imgPath) {
+                        var imgUrl = '/static/' + imgPath;
+                        popupContent += '<br><img class="popup-img" src="' + imgUrl + '" alt="Original image">';
+                    } else {
+                        popupContent += '<br><i>No image available</i>';
+                    }
+
+                    L.marker([lat, lng], { icon: icon })
+                        .addTo(map)
+                        .bindPopup(popupContent);
+                }
+            });
+        }
+
+        setTimeout(function() { map.invalidateSize(); }, 500);
+    </script>
+</body>
+</html>

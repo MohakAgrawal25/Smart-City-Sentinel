@@ -1,0 +1,299 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+<title>Smart City AI</title>
+
+<style>
+body {background:#0f172a;color:white;text-align:center;font-family:Arial;}
+button {padding:10px;background:#38bdf8;border:none;border-radius:8px;}
+</style>
+
+</head>
+<body>
+
+<h1>🚀 Smart City AI</h1>
+
+<form action="/predict" method="post" enctype="multipart/form-data">
+<input type="file" name="image" required>
+<button>Predict</button>
+</form>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Smart City AI | Urban Intelligence</title>
+  <!-- Google Fonts: Clean & Modern Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 40%, #0b1120, #030614);
+      background-attachment: fixed;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    /* subtle animated grid overlay — smart city vibe */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.08) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* main content container — respects original structure */
+    h1, form {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Heading: futuristic & elegant */
+    h1 {
+      font-size: clamp(2.2rem, 8vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #E2F0FF 0%, #7AC7FF 40%, #2DD4BF 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      margin-bottom: 1.8rem;
+      display: inline-block;
+      animation: fadeSlideDown 0.6s ease-out;
+    }
+
+    /* Card-like form with glassmorphism */
+    form {
+      background: rgba(15, 25, 45, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      padding: 2rem 2rem 2.2rem;
+      width: 100%;
+      max-width: 520px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 25px 40px -18px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.1) inset;
+      transition: all 0.3s ease;
+      animation: fadeScaleUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    form:hover {
+      border-color: rgba(56, 189, 248, 0.7);
+      box-shadow: 0 30px 45px -18px rgba(45, 212, 191, 0.3);
+      background: rgba(18, 30, 50, 0.7);
+    }
+
+    /* custom file input wrapper style — clean & modern */
+    input[type="file"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px dashed rgba(56, 189, 248, 0.5);
+      border-radius: 2rem;
+      padding: 0.8rem 1.2rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.95rem;
+      color: #E2F0FF;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      backdrop-filter: blur(4px);
+    }
+
+    input[type="file"]:hover {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Style the 'Choose File' button inside file input */
+    input[type="file"]::file-selector-button {
+      background: linear-gradient(105deg, #1e88e5, #0f67b3);
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 3rem;
+      color: white;
+      font-weight: 500;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-right: 1rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      letter-spacing: 0.3px;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: linear-gradient(105deg, #2b9ef0, #1882c4);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px -6px #0f67b380;
+    }
+
+    /* filename text color */
+    input[type="file"] {
+      color: #cbd5e6;
+    }
+
+    /* Focus state for accessibility */
+    input[type="file"]:focus-visible {
+      outline: none;
+      border-color: #2dd4bf;
+      box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.3);
+    }
+
+    /* Beautiful predict button */
+    button {
+      background: linear-gradient(100deg, #2b9ef0, #1f9f8f, #2dd4bf);
+      background-size: 180% auto;
+      border: none;
+      padding: 0.9rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      width: 100%;
+      margin-top: 0.6rem;
+      box-shadow: 0 8px 20px -8px #2b9ef0;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* small rocket emoji via pseudo? but we keep text, just add subtle hover animation */
+    button:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 28px -10px #1e88e5;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      transition: 0.05s;
+    }
+
+    /* smooth animations */
+    @keyframes fadeSlideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-22px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeScaleUp {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* responsive micro-tweaks */
+    @media (max-width: 540px) {
+      form {
+        padding: 1.5rem 1.4rem 1.8rem;
+        border-radius: 2rem;
+      }
+      
+      input[type="file"] {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+      }
+      
+      input[type="file"]::file-selector-button {
+        padding: 0.45rem 1rem;
+        font-size: 0.75rem;
+      }
+      
+      button {
+        padding: 0.75rem 1.4rem;
+        font-size: 1rem;
+      }
+      
+      h1 {
+        margin-bottom: 1.2rem;
+      }
+    }
+
+    /* additional small glow effect on focus */
+    button:focus-visible {
+      outline: 2px solid #7ac7ff;
+      outline-offset: 2px;
+      border-radius: 3rem;
+    }
+
+    /* file input custom icon using background not needed but looks fresh */
+    /* add subtle border radius consistency */
+    input[type="file"]:focus {
+      border-style: solid;
+      border-color: #2dd4bf;
+      background: rgba(45, 212, 191, 0.08);
+    }
+
+    /* optional: smooth loading state for future */
+    form {
+      transition: transform 0.2s, box-shadow 0.3s, border-color 0.2s;
+    }
+
+    /* make sure the whole layout is centered even on short screens */
+    @media (max-height: 600px) {
+      body {
+        justify-content: center;
+        padding: 1rem;
+      }
+      h1 {
+        margin-bottom: 0.8rem;
+      }
+      form {
+        padding: 1.2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>🚀 Smart City AI</h1>
+
+<form action="/predict" method="post" enctype="multipart/form-data">
+  <input type="file" name="image" required aria-label="Upload city image for analysis">
+  <button type="submit">✨ Predict ✨</button>
+</form>
+
+</body>
+</html>
